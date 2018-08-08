@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'ruby-fann'
+
+net_file = File.expand_path('~/.alex/alex.net')
+
+if ARGV.count.zero?
+  warn 'A tool to create neural network templates.',
+       'Use is as follows: {input size] [hidden size] [output size] [hidden '\
+       'activation function] [output activation function]'
+else
+  input, hidden, output = ARGV.shift(3).map(&:to_i)
+  net = RubyFann::Standard.new(num_inputs: input,
+                               hidden_neurons: [hidden],
+                               num_outputs: output)
+  net.randomize_weights(-0.1, 0.1)
+  net.set_activation_function_hidden(ARGV.shift.to_sym)
+  net.set_activation_function_output(ARGV.shift.to_sym)
+  net.save(net_file)
+end

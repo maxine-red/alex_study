@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/alex'
+require 'rmagick'
+agent = Alex::Agent.new
+
+case cmd = ARGV.shift
+when 'train'
+  agent.train
+when 'show'
+  agent.show
+when 'rate'
+  p ARGV.map(&:to_i)
+else
+  warn "Unknown command: #{cmd}"
+  exit 1
+end
