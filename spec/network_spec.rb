@@ -17,21 +17,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with alex.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'ruby-fann'
-require 'rubyhexagon'
-require 'open-uri'
-require 'pg'
+describe Alex::Network, '.new' do
+  it 'returns an instance of Alex::Network' do
+    expect(Alex::Network.new).to be_an Alex::Network
+  end
+end
 
-require_relative 'alex/agent'
-require_relative 'alex/network'
-
-# Namespace for all classes in this gem.
-# @author Maxine Michalski
-# @since 0.1.0
-module Alex
-  MAJOR = 0
-  MINOR = 1
-  PATCH = 0
-  NAME = 'alex'
-  VERSION = "#{MAJOR}.#{MINOR}.#{PATCH}"
+describe Alex::Network, '#analyze' do
+  it 'returns a Hash with tag information' do
+    expect(Alex::Network.new.analyze(278_300)).to be_a Hash
+  end
 end

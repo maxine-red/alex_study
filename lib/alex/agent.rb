@@ -31,12 +31,9 @@ module Alex
     # @author Maxine Michalski
     #
     # Initializer methodd for agent Alex.
-    #
-    # @param nsfw [Boolean] Setting to either allow NSFW art or not
-    def initialize(nsfw = false)
+    def initialize
       @net_file = "#{File.dirname(__FILE__)}/../../data/alex.net"
       @network = RubyFann::Standard.new(filename: @net_file)
-      @nsfw = nsfw
       @dir = File.expand_path('~/.alex')
       @pg = PG::Connection.new(dbname: 'alex')
       @pg.type_map_for_results = PG::BasicTypeMapForResults.new(@pg)
@@ -47,7 +44,8 @@ module Alex
     # Safe a vote/post pair to file.
     #
     # @notice This method clips input ratings
-    def rate(post_id, vote)
+    def rate(post_id, vote = nil)
+      return rate_yourself(post_id) if vote.nil?
       vote = clip(vote)
       id = @pg.exec('SELECT post_id, vote FROM e621.votes WHERE post_id = $1;',
                     [post_id]).first
@@ -71,7 +69,6 @@ module Alex
            "\e[1mTest set size: #{test.length}\e[0m"
       do_train(train)
       do_test(test)
-      # do_rate
     end
 
     def show
@@ -93,6 +90,20 @@ module Alex
 
     private
 
+    def rate_yourself(id)
+      @pg.exec('SELECT array_agg(rank) as tags FROM '\
+               'e621.post_tags JOIN e621.ranked_tags ON '\
+               'rank <= $1 AND ranked_tags.id = tag_id WHERE post_id = $2'\
+               'GROUP BY post_id;',
+               [@network.get_num_input, id]).map do |r|
+                 tags = Array.new(@network.get_num_input, 0.0)
+                 r['tags'].each do |t|
+                   tags[t - 1] = 1.0
+                 end
+                 (@network.run(tags).first * 100).round(2)
+               end.first
+    end
+
     def gather_data
       @pg.exec('SELECT array_agg(rank) as tags, vote FROM '\
                'e621.votes JOIN e621.post_tags ON votes.post_id = '\
@@ -113,7 +124,7 @@ module Alex
 
     def do_train(train)
       s = Time.now
-      @network.train_on_data(train, 2**10, 16, 0.0001)
+      @network.train_on_data(train, 2**10, 16, 0.001)
       time_spent = (Time.now - s).round(4)
       puts "Training took #{time_spent}s"
       @network.save(@net_file)

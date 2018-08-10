@@ -3,7 +3,11 @@
 
 require_relative '../lib/alex'
 require 'rmagick'
+
+require 'readline'
+
 agent = Alex::Agent.new
+network = Alex::Network.new
 
 case cmd = ARGV.shift
 when 'train'
@@ -22,6 +26,46 @@ when 'votedown'
   ARGV.map(&:to_i).each do |i|
     agent.rate(i, -1)
   end
+when 'interactive'
+  puts 'Here I will show you pictures of ids you provide and tell you how '\
+    'much I thin you\'d like them and try to explain why.'
+  while (buf = Readline.readline('Please provide an id > ', true))
+    id = if buf == 'random'
+           begin
+             id = rand(15..1_614_747)
+             rate = agent.rate(id)
+             raise StandardError if rate.nil?
+           rescue StandardError
+             warn 'Couldn\'t find proper post, retrying'
+             retry
+           end
+           puts "Chosen Post ##{id}"
+           id
+         else
+           buf.to_i
+         end
+    rate = agent.rate(id)
+    if id <= 0
+      warn 'Please provide a proper id'
+      next
+    elsif rate.nil?
+      warn 'Requested id not found'
+      next
+    end
+    puts "Image rated at #{rate.abs}% to "\
+      "#{rate.negative? ? "\e[1;31mdis" : "\e[1;32m"}like\e[0m."
+    thread = Thread.new do
+      img_blob = Rubyhexagon::Post.new(id).show.image.url.open.read
+      img = Magick::Image.from_blob(img_blob).first
+      img.display
+    end
+    tags = network.analyze(id).map do |t, w|
+      "  #{w.positive? ? "\e[1;32m" : "\e[1;31m"}#{t}\e[0m"
+    end
+    puts 'Most influental tags:', tags
+    thread.join
+  end
+  puts
 else
   warn "Unknown command: #{cmd}"
   exit 1

@@ -8,17 +8,14 @@ Rubyhexagon icon by the very talented [Ulvra](https://www.furaffinity.net/user/u
 
 ## Description
 
-Alex is a proof of concept for a preference learning AI.
+Alex is a test program, to research ways of preference learning algorithms to
+communicate with their developers.
 
-"AI" in this situation is meant as "learning program", a program that learns
-features from data and generalizes those to make predictions.
+The code is always cleaned up with rubocop, but can be messy at some times, as
+idea flow is priotized over immediate code quality.
 
-Alex is meant to learn a user's preferences by being provided samples and then
-learning features from those samples to make predictions of preference for other
-data points.
-
-In more simple terms: They learn what you like and try to predict if you would
-like something else, based on what they saw.
+Currently, there is a method tested, that determines tags, that are most
+influential, for a decision and highlights those.
 
 ## Installation
 
@@ -28,6 +25,8 @@ A PostgreSQL server must be setup and a database called 'alex' needs to be
 present.
 
 Please then execute `$ psql -f sql/alex.sql alex` to populate the database.
+
+The needed SQL file can be downloaded under https://mootech.eu/sql/alex.sql.
 
 You can reset everything by simply running the above command again.
 It also contains a lot of data, so execution might take some time.

@@ -18,10 +18,8 @@
 #  along with alex.  If not, see <http://www.gnu.org/licenses/>.
 
 describe Alex::Agent, '.new' do
-  context 'a network object is given as a parameter' do
-    it 'returns an instance of Alex::Agent' do
-      expect(Alex::Agent.new).to be_an Alex::Agent
-    end
+  it 'returns an instance of Alex::Agent' do
+    expect(Alex::Agent.new).to be_an Alex::Agent
   end
 end
 
