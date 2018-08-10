@@ -42,10 +42,14 @@ Will train the network, it is pre-trained already.
 Shows a post, Alex thinks the user will like, and gives additional information
 on why something was chosen.
 
-`$ bin/alex rate [post id] [rating]`
+`$ bin/alex voteup [post id] [post_id] ...`
+`$ bin/alex votedown [post id] [post_id] ...`
 
 Add another rating to Alex's list of ratings. This is used for
 training/learning.
+`$ bin/alex interactive`
+
+Spawns a pseudo shell where IDs can be specified and analyzed.
 
 ## Donations
 
