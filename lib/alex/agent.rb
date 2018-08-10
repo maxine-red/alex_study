@@ -75,7 +75,10 @@ module Alex
                         r['tags'].each do |t|
                           tags[t - 1] = 1.0
                         end
-                        [tags, [r['vote']]]
+                        vote = Array.new(@network.get_num_output) do |i|
+                          i.succ == r['vote'].abs ? r['vote'].to_f : 0.0
+                        end
+                        [tags, vote]
                       end
       train, test = create_data(data.uniq.shuffle)
       puts "\e[1mTrain set size: #{train.length}\e[0m",
