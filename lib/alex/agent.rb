@@ -19,11 +19,9 @@
 
 # Namespace for all classes in this gem.
 # @author Maxine Michalski
-# @since 0.1.0
 module Alex
   # Main class for agent creation and management.
   # @author Maxine Michalski
-  # @since 0.1.0
   class Agent
     # @author Maxine Michalski
     # @return [RubyFann::Standard] Network attached to this agent.

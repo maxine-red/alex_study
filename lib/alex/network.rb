@@ -19,11 +19,9 @@
 
 # Namespace for all classes in this gem.
 # @author Maxine Michalski
-# @since 0.1.0
 module Alex
   # Class for managing network analysis.
   # @author Maxine Michalski
-  # @since 0.1.0
   class Network
     # @author Maxine Michalski
     #

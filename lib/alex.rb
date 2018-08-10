@@ -27,11 +27,5 @@ require_relative 'alex/network'
 
 # Namespace for all classes in this gem.
 # @author Maxine Michalski
-# @since 0.1.0
 module Alex
-  MAJOR = 0
-  MINOR = 1
-  PATCH = 0
-  NAME = 'alex'
-  VERSION = "#{MAJOR}.#{MINOR}.#{PATCH}"
 end

@@ -66,11 +66,6 @@ Follow me on Twitter, if you're brave enough.
 
 Copyright 2018 :copyright: Maxine Michalski
 
-## Semantic versioning
-
-This gem follows semantic versioning 2.0. This means that minor releases are
-safe to use and you can set your dependecy to '~> 1.0'.
-
 ## Contributing
 
 1. [Fork it](https://github.com/maxine-red/alex/fork)
