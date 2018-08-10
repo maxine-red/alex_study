@@ -1,10 +1,8 @@
 # Alex: Proof of concept for preference learning algorithms
 
-![Rubyhexagon](https://mootech.eu/alex.png)
+![Alex](https://mootech.eu/alex.png)
 
-Rubyhexagon icon by the very talented [Ulvra](https://www.furaffinity.net/user/ulvra)
-
-![GitHub Release Date](https://img.shields.io/github/release-date/maxine-red/alex.svg)
+Alex head by the very talented [Ulvra](https://www.furaffinity.net/user/ulvra)
 
 ## Description
 
