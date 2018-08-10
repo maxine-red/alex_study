@@ -9,9 +9,19 @@ case cmd = ARGV.shift
 when 'train'
   agent.train
 when 'show'
-  agent.show
-when 'rate'
-  p ARGV.map(&:to_i)
+  id = agent.show
+  puts "Showing image of post ##{id}"
+  img_blob = Rubyhexagon::Post.new(id).show.image.url.open.read
+  img = Magick::Image.from_blob(img_blob).first
+  img.display
+when 'voteup'
+  ARGV.map(&:to_i).each do |i|
+    agent.rate(i, 1)
+  end
+when 'votedown'
+  ARGV.map(&:to_i).each do |i|
+    agent.rate(i, -1)
+  end
 else
   warn "Unknown command: #{cmd}"
   exit 1

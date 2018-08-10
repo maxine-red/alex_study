@@ -75,46 +75,23 @@ module Alex
     end
 
     def show
-      @pg.exec('SELECT alex.votes.post_id FROM alex.votes LEFT JOIN '\
-               'e621.votes ON alex.votes.post_id = e621.votes.post_id '\
-               'WHERE e621.votes.post_id IS NULL ORDER BY alex.votes.vote '\
-               'DESC, alex.votes.post_id LIMIT 1;').first['post_id']
-    end
-
-    private
-
-    def do_rate
-      puts 'Collecting data for rating all unrated items, by Alex...'
-      @pg.exec('DELETE FROM alex.votes;')
-      @pg.prepare('ins',
-                  'INSERT INTO alex.votes (post_id, vote) VALUES ($1, $2);')
-      last_id = 0
-      loop do
-        posts = gather_post_data(last_id)
-        break if posts == []
-        posts.each do |id, tags|
-          @pg.exec_prepared('ins', [id, @network.run(tags).first.round(3)])
+      data = @pg.exec('SELECT post_tags.post_id, array_agg(rank) as tags FROM '\
+                      'e621.post_tags LEFT JOIN e621.votes ON votes.post_id = '\
+                      'post_tags.post_id JOIN e621.ranked_tags ON '\
+                      'rank <= $1 AND ranked_tags.id = tag_id '\
+                      'WHERE votes.post_id IS NULL '\
+                      'GROUP BY post_tags.post_id ORDER BY post_tags.post_id;',
+                      [@network.get_num_input]).to_a
+      data.shuffle.each do |r|
+        tags = Array.new(@network.get_num_input, 0.0)
+        r['tags'].each do |t|
+          tags[t - 1] = 1.0
         end
-        last_id = posts.last.first
+        return r['post_id'] if @network.run(tags).first > 0.95
       end
     end
 
-    def gather_post_data(last_id)
-      @pg.exec('SELECT post_tags.post_id, array_agg(rank) as tags FROM '\
-               'e621.post_tags LEFT JOIN e621.votes ON votes.post_id = '\
-               'post_tags.post_id JOIN e621.ranked_tags ON '\
-               'rank <= $1 AND ranked_tags.id = tag_id '\
-               'WHERE votes.post_id IS NULL AND post_tags.post_id > $2 '\
-               'GROUP BY post_tags.post_id ORDER BY post_tags.post_id '\
-               'LIMIT 100000;',
-               [@network.get_num_input, last_id]).map do |r|
-                 tags = Array.new(@network.get_num_input, 0.0)
-                 r['tags'].each do |t|
-                   tags[t - 1] = 1.0
-                 end
-                 [r['post_id'], tags]
-               end
-    end
+    private
 
     def gather_data
       @pg.exec('SELECT array_agg(rank) as tags, vote FROM '\
