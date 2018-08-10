@@ -47,3 +47,9 @@ describe Alex::Agent, '#train' do
     Alex::Agent.new.train
   end
 end
+
+describe Alex::Agent, '#show' do
+  it 'retusn a post ID to present to user' do
+    expect(Alex::Agent.new.show).to be_an Integer
+  end
+end
