@@ -4,14 +4,7 @@
 
 Rubyhexagon icon by the very talented [Ulvra](https://www.furaffinity.net/user/ulvra)
 
-[![Build Status](https://travis-ci.org/maxine-red/alex.svg?branch=master)](https://travis-ci.org/maxine-red/alex)
-
-[![Gem Version](https://img.shields.io/gem/v/alex.svg)](https://rubygems.org/gems/alex)
 ![GitHub Release Date](https://img.shields.io/github/release-date/maxine-red/alex.svg)
-
-[![Maintainability](https://api.codeclimate.com/v1/badges/37caa7ef71f207e6f961/maintainability)](https://codeclimate.com/github/maxine-red/alex/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/37caa7ef71f207e6f961/test_coverage)](https://codeclimate.com/github/maxine-red/alex/test_coverage)
-[![Inline docs](http://inch-ci.org/github/maxine-red/alex.svg)](http://inch-ci.org/github/maxine-red/alex)
 
 ## Description
 
