@@ -2,7 +2,6 @@
 
 source 'https://rubygems.org'
 
-
 gem 'json', '~> 2.0'
 gem 'pg', '~> 1.0'
 gem 'ruby-fann', '~> 1.2'

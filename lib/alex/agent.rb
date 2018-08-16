@@ -60,7 +60,7 @@ module Alex
     #
     # Taining method for attached network.
     def train
-      puts 'Collecting data... (this may take some time)'
+      puts 'Generating data... (this may take some time)'
       data = gather_data
       train, test = create_data(data.uniq.shuffle)
       puts "\e[1mTrain set size: #{train.length}\e[0m",
@@ -103,21 +103,41 @@ module Alex
     end
 
     def gather_data
-      @pg.exec('SELECT array_agg(rank) as tags, vote FROM '\
-               'e621.votes JOIN e621.post_tags ON votes.post_id = '\
-               'post_tags.post_id JOIN e621.ranked_tags ON '\
-               'rank <= $1 AND ranked_tags.id = tag_id GROUP BY '\
-               'vote, votes.post_id;',
-               [@network.get_num_input]).map do |r|
-                 tags = Array.new(@network.get_num_input, 0.0)
-                 r['tags'].each do |t|
-                   tags[t - 1] = 1.0
-                 end
-                 vote = Array.new(@network.get_num_output) do |i|
-                   i.succ == r['vote'].abs ? r['vote'].to_f : 0.0
-                 end
-                 [tags, vote]
-               end
+      posts = JSON.parse(File.read("#{@dir}/posts.json"), symbolize_names: true)
+      voteups = posts[:voteups].map { |e| e.map(&:to_sym) }
+      votedowns = posts[:votedowns].map { |e| e.map(&:to_sym) }
+      favorites = posts[:favorites].map { |e| e.map(&:to_sym) }
+      voteups = favorites.count > voteups.count ? favorites : voteups
+      votedowns = votedowns.sample(voteups.count)
+      generate_data(voteups, votedowns)
+    end
+
+    def generate_data(voteups, votedowns)
+      tags = determine_input_tags((voteups + votedowns).flatten)
+      data = voteups.map do |v|
+        v = v.map { |t| tags.index(t) }.compact
+        d = Array.new(@network.get_num_input) do |a|
+          v.include?(a) ? 1.0 : 0.0
+        end
+        [d, [1.0]]
+      end
+      data += votedowns.map do |v|
+        v = v.map { |t| tags.index(t) }.compact
+        d = Array.new(@network.get_num_input) do |a|
+          v.include?(a) ? 1.0 : 0.0
+        end
+        [d, [-1.0]]
+      end
+      data
+    end
+
+    def determine_input_tags(data)
+      tags = {}
+      data.each do |d|
+        tags.store(d, 0) unless tags.key?(d)
+        tags[d] += 1
+      end
+      tags.sort_by { |_, v| v }.reverse.map(&:first)[0, @network.get_num_input]
     end
 
     def do_train(train)
